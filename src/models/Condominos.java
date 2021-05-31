@@ -5,8 +5,10 @@ public class Condominos {
     private int Bloco;
     private int numero;
     private String telefone;
-    private Bicicleta bicicleta;
+    public Bicicleta bicicleta;
 
+    public Condominos() {}
+    
     public Condominos(String nome, int Bloco, int numero, String telefone, Bicicleta bicicleta) {        
         this.nome = nome;
         this.Bloco = Bloco;

@@ -10,20 +10,27 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import models.Bicicleta;
 import models.Condominos;
-
+import connectionDAO.BicicletarioDAO;
 /**
  *
  * @author user
  */
 public class FrameCadastro extends javax.swing.JFrame {
-    ArrayList<Condominos> condominosLista = new ArrayList<Condominos>();
-
+    ArrayList<Condominos> condominosLista = BicicletarioDAO.listarTodos();
+    
     /**
      * Creates new form FrameCadastro
      */
     public FrameCadastro() {
         initComponents();
         desativarCampos();
+        if(condominosLista != null)carregarTabela();
+        desativarCampos();
+        int n_ids = condominosLista.size();
+        id_combobox.addItem(null);
+        for(int i=0;i<n_ids;i++)id_combobox.addItem(String.valueOf(i+1));
+        btn_procurar.setEnabled(false);
+        
     }
 
     /**
@@ -63,9 +70,9 @@ public class FrameCadastro extends javax.swing.JFrame {
         btn_novo = new javax.swing.JButton();
         btn_editar = new javax.swing.JButton();
         btn_excluir = new javax.swing.JButton();
-        id_text = new javax.swing.JTextField();
         btn_procurar = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
+        id_combobox = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tabelaRegistros = new javax.swing.JTable();
@@ -229,6 +236,11 @@ public class FrameCadastro extends javax.swing.JFrame {
         });
 
         btn_excluir.setText("EXCLUIR");
+        btn_excluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_excluirActionPerformed(evt);
+            }
+        });
 
         btn_procurar.setText("PROCURAR");
         btn_procurar.addActionListener(new java.awt.event.ActionListener() {
@@ -238,6 +250,13 @@ public class FrameCadastro extends javax.swing.JFrame {
         });
 
         jLabel9.setText("ID:");
+
+        id_combobox.setModel(id_combobox.getModel());
+        id_combobox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                id_comboboxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -257,8 +276,8 @@ public class FrameCadastro extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(11, 11, 11)
                         .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(id_text, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(id_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_procurar)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -269,9 +288,9 @@ public class FrameCadastro extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(26, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(id_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_procurar)
-                    .addComponent(jLabel9))
+                    .addComponent(jLabel9)
+                    .addComponent(id_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -311,7 +330,14 @@ public class FrameCadastro extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(tabelaRegistros);
         if (tabelaRegistros.getColumnModel().getColumnCount() > 0) {
-            tabelaRegistros.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tabelaRegistros.getColumnModel().getColumn(0).setResizable(false);
+            tabelaRegistros.getColumnModel().getColumn(0).setPreferredWidth(20);
+            tabelaRegistros.getColumnModel().getColumn(1).setResizable(false);
+            tabelaRegistros.getColumnModel().getColumn(2).setResizable(false);
+            tabelaRegistros.getColumnModel().getColumn(3).setResizable(false);
+            tabelaRegistros.getColumnModel().getColumn(4).setResizable(false);
+            tabelaRegistros.getColumnModel().getColumn(5).setResizable(false);
+            tabelaRegistros.getColumnModel().getColumn(6).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -362,7 +388,6 @@ public class FrameCadastro extends javax.swing.JFrame {
     }//GEN-LAST:event_nome_textActionPerformed
 
     private void btn_novoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novoActionPerformed
-        id_text.setText("");
         desativarCampos();
         ativarCampos();
     }//GEN-LAST:event_btn_novoActionPerformed
@@ -382,35 +407,83 @@ public class FrameCadastro extends javax.swing.JFrame {
         String modelo = modelo_text.getText();
         String vaga = vaga_text.getText();
         String cor = cor_text.getText();
-        Bicicleta bicicleta = new Bicicleta(modelo, cor, vaga);
+    
+    	Bicicleta bicicleta = new Bicicleta(modelo, cor, vaga);
         Condominos condomino = new Condominos(nome, bloco, numero,telefone, bicicleta);
         
         condominosLista.add(condomino);
-        System.out.println(condominosLista);
+        BicicletarioDAO.salvar(condomino, null);
         
         if(condominosLista != null)carregarTabela();
         desativarCampos();
+
+        
     }//GEN-LAST:event_btn_salvarActionPerformed
 
     private void btn_procurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_procurarActionPerformed
-        ativarCampos();
-        btn_salvar.setEnabled(false);
-        btn_cancelar.setEnabled(false);
-        btn_editar.setEnabled(true);
-        btn_excluir.setEnabled(true);
+        String id = id_combobox.getSelectedItem().toString();        
+        Condominos condomino = BicicletarioDAO.buscar(id);
+        if(condomino != null){
+            ativarCampos();
+            nome_text.setText(condomino.getNome());
+            bloco_text.setText(String.valueOf(condomino.getBloco()));
+            numero_text.setText(String.valueOf(condomino.getNumero()));
+            telefone_text.setText(String.valueOf(condomino.getTelefone()));
+            cpf_text.setText("");
+            modelo_text.setText(condomino.bicicleta.getModelo());
+            vaga_text.setText(condomino.bicicleta.getVaga());
+            cor_text.setText(condomino.bicicleta.getCor());
+            
+            btn_salvar.setEnabled(false);
+            btn_cancelar.setEnabled(false);
+            btn_editar.setEnabled(true);
+            btn_excluir.setEnabled(true);
+        }
+
     }//GEN-LAST:event_btn_procurarActionPerformed
 
     private void btn_editarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editarActionPerformed
-        // TODO add your handling code here:
+        String id = id_combobox.getSelectedItem().toString();
+        String nome = nome_text.getText();
+        int bloco = Integer.parseInt(bloco_text.getText());
+        int numero = Integer.parseInt(numero_text.getText());
+        String telefone = telefone_text.getText();
+        String cpf = cpf_text.getText();
+        String modelo = modelo_text.getText();
+        String vaga = vaga_text.getText();
+        String cor = cor_text.getText();
+     	Bicicleta bicicleta = new Bicicleta(modelo, cor, vaga);
+        Condominos condomino = new Condominos(nome, bloco, numero,telefone, bicicleta);
+        
+        BicicletarioDAO.salvar(condomino, id);
+        carregarTabela();
+        desativarCampos();
+        id_combobox.setSelectedIndex(0);
     }//GEN-LAST:event_btn_editarActionPerformed
+
+    private void id_comboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_id_comboboxActionPerformed
+        if (id_combobox.getSelectedItem() != null) {
+            btn_procurar.setEnabled(true);
+        }else{
+            btn_procurar.setEnabled(false);
+        }
+    }//GEN-LAST:event_id_comboboxActionPerformed
+
+    private void btn_excluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_excluirActionPerformed
+        String id = id_combobox.getSelectedItem().toString();
+        BicicletarioDAO.deletar(id);
+        desativarCampos();
+        id_combobox.setSelectedIndex(0);
+    }//GEN-LAST:event_btn_excluirActionPerformed
     
     public void carregarTabela(){
-        Object linhas[] = {"Nome","Bloco", "Numero", "Telefone","Modelo","Cor","Vaga"};
+        Object linhas[] = {"ID","Nome","Bloco", "Numero", "Telefone","Modelo","Cor","Vaga"};
         DefaultTableModel modelo = new DefaultTableModel(linhas,0);
         
         for(int i=0; i<condominosLista.size();i++){
             
-            modelo.addRow(new Object[]{condominosLista.get(i).getNome(), 
+            modelo.addRow(new Object[]{i+1,
+                                       condominosLista.get(i).getNome(), 
                                        condominosLista.get(i).getBloco(),
                                        condominosLista.get(i).getNumero(),
                                        condominosLista.get(i).getTelefone(),
@@ -481,7 +554,7 @@ public class FrameCadastro extends javax.swing.JFrame {
     private javax.swing.JButton btn_salvar;
     private javax.swing.JTextField cor_text;
     private javax.swing.JTextField cpf_text;
-    private javax.swing.JTextField id_text;
+    private javax.swing.JComboBox<String> id_combobox;
     private javax.swing.JButton jButton3;
     private javax.swing.JColorChooser jColorChooser1;
     private javax.swing.JLabel jLabel1;

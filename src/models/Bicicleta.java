@@ -4,6 +4,8 @@ public class Bicicleta {
     private String modelo;
     private String cor;
     private String vaga;
+    
+    public Bicicleta() {}
 
     public Bicicleta(String modelo, String cor, String vaga) {
         this.modelo = modelo;
