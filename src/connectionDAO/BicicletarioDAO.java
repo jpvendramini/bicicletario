@@ -92,6 +92,27 @@ public class BicicletarioDAO {
     	}
     }
     
+    public static int[] getIds(int tamanho) {
+    	try {
+    		int ids[] = new int[tamanho];
+    		
+    		PreparedStatement ps = connection.prepareStatement("SELECT * FROM condomino");
+    		ResultSet rs = ps.executeQuery();
+    		int contator = 0;
+    		while(rs.next()) {
+    			ids[contator] = rs.getInt("id");
+    			contator++;
+    		}
+    		System.out.println(ids);
+    		return ids;
+    	}catch(SQLException e) {
+    		e.getMessage();
+    		JOptionPane.showMessageDialog(null, "Erro preencher arraylist");
+    		return null;
+    	}
+    	
+    }
+    
     
     
     public static Condominos buscar(String id){

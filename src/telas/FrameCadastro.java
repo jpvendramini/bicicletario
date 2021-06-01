@@ -27,8 +27,9 @@ public class FrameCadastro extends javax.swing.JFrame {
         if(condominosLista != null)carregarTabela();
         desativarCampos();
         int n_ids = condominosLista.size();
+        int ids_valores[] = BicicletarioDAO.getIds(n_ids);
         id_combobox.addItem(null);
-        for(int i=0;i<n_ids;i++)id_combobox.addItem(String.valueOf(i+1));
+        for(int i=0;i<n_ids;i++)id_combobox.addItem(String.valueOf(ids_valores[i]));
         btn_procurar.setEnabled(false);
         
     }
@@ -388,6 +389,7 @@ public class FrameCadastro extends javax.swing.JFrame {
     }//GEN-LAST:event_nome_textActionPerformed
 
     private void btn_novoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novoActionPerformed
+        id_combobox.setSelectedIndex(0);
         desativarCampos();
         ativarCampos();
     }//GEN-LAST:event_btn_novoActionPerformed
@@ -456,9 +458,9 @@ public class FrameCadastro extends javax.swing.JFrame {
         Condominos condomino = new Condominos(nome, bloco, numero,telefone, bicicleta);
         
         BicicletarioDAO.salvar(condomino, id);
-        carregarTabela();
         desativarCampos();
         id_combobox.setSelectedIndex(0);
+        if(condominosLista != null)carregarTabela();
     }//GEN-LAST:event_btn_editarActionPerformed
 
     private void id_comboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_id_comboboxActionPerformed
@@ -474,6 +476,7 @@ public class FrameCadastro extends javax.swing.JFrame {
         BicicletarioDAO.deletar(id);
         desativarCampos();
         id_combobox.setSelectedIndex(0);
+        if(condominosLista != null)carregarTabela();
     }//GEN-LAST:event_btn_excluirActionPerformed
     
     public void carregarTabela(){

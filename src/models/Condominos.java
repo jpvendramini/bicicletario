@@ -1,6 +1,7 @@
 package models;
 
 public class Condominos {
+	private int id;
     private String nome;
     private int Bloco;
     private int numero;
@@ -9,7 +10,7 @@ public class Condominos {
 
     public Condominos() {}
     
-    public Condominos(String nome, int Bloco, int numero, String telefone, Bicicleta bicicleta) {        
+    public Condominos( String nome, int Bloco, int numero, String telefone, Bicicleta bicicleta) {        
         this.nome = nome;
         this.Bloco = Bloco;
         this.numero = numero;
