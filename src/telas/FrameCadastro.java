@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import models.Bicicleta;
 import models.Condominos;
 import connectionDAO.BicicletarioDAO;
+import javax.swing.JTable;
 /**
  *
  * @author user
@@ -460,7 +461,8 @@ public class FrameCadastro extends javax.swing.JFrame {
         BicicletarioDAO.salvar(condomino, id);
         desativarCampos();
         id_combobox.setSelectedIndex(0);
-        if(condominosLista != null)carregarTabela();
+        
+        carregarTabela();
     }//GEN-LAST:event_btn_editarActionPerformed
 
     private void id_comboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_id_comboboxActionPerformed
@@ -480,6 +482,7 @@ public class FrameCadastro extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_excluirActionPerformed
     
     public void carregarTabela(){
+        condominosLista = BicicletarioDAO.listarTodos();
         Object linhas[] = {"ID","Nome","Bloco", "Numero", "Telefone","Modelo","Cor","Vaga"};
         DefaultTableModel modelo = new DefaultTableModel(linhas,0);
         
@@ -495,7 +498,7 @@ public class FrameCadastro extends javax.swing.JFrame {
                                        condominosLista.get(i).getBicicleta().getVaga(),
             });
         }
-        
+  
         tabelaRegistros.setModel(modelo);
         
     }
